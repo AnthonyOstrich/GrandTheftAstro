@@ -13,6 +13,9 @@ import com.badlogic.gdx.physics.box2d.*;
 public class Entity {
     protected Body body;
     protected Sprite sprite;
+    protected BodyDef bodyDef;
+    protected FixtureDef fixtureDef;
+
 
     public Entity(Texture texture){
         sprite = new Sprite(texture);
@@ -35,7 +38,6 @@ public class Entity {
         sprite.setSize(scale, scale*sprite.getHeight()/sprite.getWidth());
         FixtureDef fixtureDef = this.generateFixtureDef();
         addToWorld(world, bodyDef, fixtureDef);
-
     }
 
     protected FixtureDef generateFixtureDef(){

@@ -40,8 +40,7 @@ public class Area implements Screen, InputProcessor {
         batch = new SpriteBatch();
         entities = new ArrayList<Entity>();
         world = new World(Vector2.Zero,true);
-        Texture boxTexture = new Texture(Gdx.files.internal("badlogic.jpg"));
-        box = new Ship(boxTexture);
+        box = Ship.generateFromFile(Gdx.files.internal("ships/falcon"));
         box.addToWorld(world, Vector2.Zero, 1);
         entities.add(box);
     }
