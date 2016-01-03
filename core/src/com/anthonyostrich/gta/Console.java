@@ -1,36 +1,21 @@
 package com.anthonyostrich.gta;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Texture;
 
 /**
- * Created by anthony on 12/19/15.
+ * Created by anthony on 1/3/16.
  */
-public class Player implements InputProcessor {
-
-    Ship controlled;
-
-    public void setControlled(Ship toControll) {
-        controlled = toControll;
-    }
-
-    public void processFrameInput(float delta){
-        if(Gdx.input.isKeyPressed(Input.Keys.W)){
-            controlled.accelerateForwards(10);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.A)){
-            controlled.turn(10);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.D)){
-            controlled.turn(-10);
-        }
-    }
+public class Console implements  InputProcessor{
 
     @Override
     public boolean keyDown(int keycode) {
+        if(keycode == Input.Keys.GRAVE) {
+            System.out.println("Exiting");
+            return true;
+        }
         return false;
+
     }
 
     @Override

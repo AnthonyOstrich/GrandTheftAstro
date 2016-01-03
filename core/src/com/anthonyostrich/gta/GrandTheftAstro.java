@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Vector2;
 
 public class GrandTheftAstro extends Game {
 
@@ -19,7 +20,7 @@ public class GrandTheftAstro extends Game {
 	@Override
 	public void create() {
         batch = new SpriteBatch();
-        Area area = new Area();
+        Area area = new Area(new Player());
 		this.setScreen(area);
         Gdx.input.setInputProcessor(area);
 
@@ -29,6 +30,9 @@ public class GrandTheftAstro extends Game {
         parameter.color = Color.BLACK;
         font = generator.generateFont(parameter);
         generator.dispose();
+
+        area.spawnShip("falcon", new Vector2(0,0), true);
+        area.spawnShip("triangle", new Vector2(3,3),4, false);
     }
 
 	@Override

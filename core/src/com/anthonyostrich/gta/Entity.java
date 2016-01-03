@@ -36,15 +36,15 @@ public class Entity {
     public void addToWorld(World world, Vector2 location, float scale){
         BodyDef bodyDef = generateBodyDef(location);
         sprite.setSize(scale, scale*sprite.getHeight()/sprite.getWidth());
-        FixtureDef fixtureDef = this.generateFixtureDef();
+        FixtureDef fixtureDef = this.generateFixtureDef(scale);
         addToWorld(world, bodyDef, fixtureDef);
     }
 
-    protected FixtureDef generateFixtureDef(){
+    protected FixtureDef generateFixtureDef(float scale){
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(1, sprite.getHeight()/sprite.getWidth());
+        shape.setAsBox(scale, scale * sprite.getHeight()/sprite.getWidth());
 
-        sprite.setSize(2, 2*sprite.getHeight()/sprite.getWidth());
+        sprite.setSize(scale * 2, scale * 2*sprite.getHeight()/sprite.getWidth());
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 10;
@@ -93,4 +93,7 @@ public class Entity {
         return Vector2.X.cpy().rotateRad(body.getAngle());
     }
 
+    public void setPosition(Vector2 position){
+        body.getTransform().setPosition(position);
+    }
 }

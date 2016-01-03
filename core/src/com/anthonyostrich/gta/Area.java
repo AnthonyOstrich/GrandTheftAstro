@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -24,15 +25,15 @@ import java.util.Comparator;
  */
 public class Area implements Screen, InputProcessor {
     private World world;
-    private Player player;
     private Vector2 spawnLocation;
     private ArrayList<Entity> entities;
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Box2DDebugRenderer debugRenderer;
-    Ship box;
+    private boolean debug = false;
+    private Player player;
 
-    public Area(){
+    public Area(Player player){
         debugRenderer = new Box2DDebugRenderer();
         debugRenderer.isDrawVelocities();
         camera = new OrthographicCamera(10, 10f * Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
@@ -40,9 +41,7 @@ public class Area implements Screen, InputProcessor {
         batch = new SpriteBatch();
         entities = new ArrayList<Entity>();
         world = new World(Vector2.Zero,true);
-        box = Ship.generateFromFile(Gdx.files.internal("ships/falcon"));
-        box.addToWorld(world, Vector2.Zero, 1);
-        entities.add(box);
+        this.player = player;
     }
 
     @Override
@@ -51,21 +50,11 @@ public class Area implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
+        player.processFrameInput(delta);
+
         batch.setProjectionMatrix(camera.combined);
         Gdx.gl.glClearColor(1,1,0,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        if(Gdx.input.isKeyPressed(Input.Keys.W)){
-            box.accelerateForwards(20);
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.A)){
-            box.turn(20);
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.D)){
-            box.turn(-20);
-        }
 
         world.step(delta, 6, 2);
 
@@ -87,7 +76,8 @@ public class Area implements Screen, InputProcessor {
             entities.get(i).draw(batch);
         }
         batch.end();
-        debugRenderer.render(world,camera.combined);
+        if(debug)
+            debugRenderer.render(world,camera.combined);
     }
 
     @Override
@@ -95,6 +85,24 @@ public class Area implements Screen, InputProcessor {
         Vector3 position = camera.position.cpy();
         camera = new OrthographicCamera(10, 10f * Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
         camera.position.set(position);
+    }
+
+    public void spawnShip(String name, Vector2 position, float scale, boolean isPlayer) {
+        FileHandle shipFile = new FileHandle("ships/" + name);
+        if(shipFile.exists() == false) {
+            System.out.println("No ship found by the name of " + name);
+            return;
+        }
+        Ship ship = Ship.generateFromFile(shipFile);
+        ship.addToWorld(world, position, scale);
+        entities.add(ship);
+        if(isPlayer){
+            player.setControlled(ship);
+        }
+    }
+
+    public void spawnShip(String name, Vector2 position, boolean isPlayer) {
+        spawnShip(name, position, 1, isPlayer);
     }
 
     @Override
@@ -119,7 +127,12 @@ public class Area implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if(keycode == Input.Keys.F3) {
+            debug = !debug;
+            return true;
+        }
         return false;
+
     }
 
     @Override
@@ -134,11 +147,7 @@ public class Area implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector3 unprojected = camera.unproject(new Vector3(screenX, screenY, 1));
-        Vector2 world = new Vector2(unprojected.x, unprojected.y);
-        System.out.println(world);
-        box.rotateTowards(world,1);
-        return true;
+        return false;
     }
 
     @Override
@@ -160,4 +169,5 @@ public class Area implements Screen, InputProcessor {
     public boolean scrolled(int amount) {
         return false;
     }
+
 }
